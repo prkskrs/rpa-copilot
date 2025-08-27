@@ -9,10 +9,6 @@
     "declaration": true,
     "sourceMap": true,
     "strict": true,
-    "baseUrl": ".",
-    "paths": {
-      "@rpa/core": ["packages/core/src/index.ts"],
-      "@rpa/driver-playwright": ["packages/driver-playwright/src/index.ts"]
-    }
+    "types": ["node"]
   }
 }

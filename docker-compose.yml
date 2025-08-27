@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  rpa:
+    build: ./sandbox
+    environment:
+      - DISPLAY=:99
+      - PROVIDER=openai
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - COMPUTER_USE_MODEL=computer-use-preview
+      - STEP_LIMIT=40
+      - ALLOWLIST=drive.google.com,accounts.google.com,docs.google.com
+    ports: ['7007:7007', '7008:7008', '7900:7900']
+    volumes:
+      - ~/Downloads:/home/pwuser/Downloads

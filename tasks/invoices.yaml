@@ -1,0 +1,8 @@
+goal: >
+  Open drive.google.com. Create/select folder for the current month (YYYY-MM).
+  Rename every PDF in /home/pwuser/Downloads to "invoice-<vendor>-<YYYY-MM>-<nn>.pdf".
+  Upload all renamed PDFs into the month folder. Stop when done.
+startUrl: "https://drive.google.com/drive/my-drive"
+notes:
+  - Ask for human help if login or 2FA is required; then continue.
+  - Respect allowlist; never navigate outside google domains.

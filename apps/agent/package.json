@@ -1,0 +1,22 @@
+{
+    "name": "@rpa/agent",
+    "version": "0.1.0",
+    "private": true,
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc -b",
+        "start": "node dist/index.js",
+        "clean": "rimraf dist"
+    },
+    "dependencies": {
+        "@rpa/core": "*",
+        "@rpa/driver-playwright": "*",
+        "body-parser": "^1.20.2",
+        "express": "^4.19.2"
+    },
+    "devDependencies": {
+        "@types/body-parser": "^1.19.6",
+        "@types/express": "^5.0.3"
+    }
+}

@@ -1,18 +1,21 @@
 {
-  "name": "rpa-copilot",
-  "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "scripts": {
-    "build": "tsc -b -v tsconfig.build.json",
-    "clean": "rimraf \"**/dist\" rpa-checkpoints.sqlite",
-    "start:agent": "node apps/agent/dist/index.js",
-    "start:viewer": "node apps/viewer/dist/index.js"
-  },
-  "devDependencies": {
-    "rimraf": "^5.0.10",
-    "typescript": "^5.5.4"
-  }
+    "name": "rpa-copilot",
+    "private": true,
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "build": "tsc -b -v tsconfig.build.json",
+        "clean": "rimraf \"**/dist\" rpa-checkpoints.sqlite",
+        "start:agent": "node apps/agent/dist/index.js",
+        "start:viewer": "node apps/viewer/dist/index.js"
+    },
+    "devDependencies": {
+        "@types/body-parser": "^1.19.6",
+        "@types/express": "^5.0.3",
+        "@types/node": "^20.14.11",
+        "rimraf": "^5.0.10",
+        "typescript": "^5.5.4"
+    }
 }
