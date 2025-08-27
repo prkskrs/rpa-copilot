@@ -14,7 +14,8 @@
         "@rpa/driver-playwright": "*",
         "body-parser": "^1.20.2",
         "dotenv": "^16.6.1",
-        "express": "^4.19.2"
+        "express": "^4.19.2",
+        "tesseract.js": "^6.0.1"
     },
     "devDependencies": {
         "@types/body-parser": "^1.19.6",

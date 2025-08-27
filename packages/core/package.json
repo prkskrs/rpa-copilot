@@ -14,7 +14,8 @@
         "@langchain/langgraph": "*",
         "@langchain/langgraph-checkpoint-sqlite": "*",
         "dotenv": "^17.2.1",
-        "openai": "^4.58.1"
+        "openai": "^4.58.1",
+        "tesseract.js": "^6.0.1"
     },
     "devDependencies": {
         "@types/body-parser": "^1.19.6",

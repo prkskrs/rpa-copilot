@@ -4,3 +4,4 @@ rpa-checkpoints.sqlite
 .DS_Store
 .env
 **/*.log
+logs/

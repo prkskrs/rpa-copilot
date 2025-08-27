@@ -36,8 +36,36 @@ export class OpenAIComputerUse {
   async step(
     userGoal: string,
     latestScreenshotB64?: string,
+    domHints?: Array<{
+      id: string;
+      role: string;
+      name: string;
+      x: number;
+      y: number;
+      bbox: [number, number, number, number];
+    }>,
   ): Promise<ComputerAction[] | undefined> {
-    const input: any[] = [{ role: 'user', content: userGoal }];
+    const domText = (domHints ?? [])
+      .slice(0, 60)
+      .map(
+        (h) =>
+          `${h.id} | ${h.role} | ${h.name} | ${h.x},${h.y} | [${h.bbox.join(
+            ',',
+          )}]`,
+      )
+      .join('\n');
+
+    const content = [
+      'You control a live browser. Prefer accessible elements when possible.',
+      'Available elements (id | role | name | center(x,y) | bbox[x,y,w,h]):',
+      domText,
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    const input: any[] = [
+      { role: 'user', content: `${userGoal}\n\n${content}` },
+    ];
 
     const tools: any = [
       {

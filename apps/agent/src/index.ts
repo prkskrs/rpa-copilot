@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { BrowserDriver, Executor } from '@rpa/driver-playwright';
+import { AdvancedDriver, ExecutorAdvanced } from '@rpa/driver-playwright';
 import { buildGraph } from '@rpa/core';
 
 const app = express();
@@ -21,14 +21,14 @@ app.post('/run', async (req: Request, res: Response) => {
   fs.mkdirSync(runDir, { recursive: true });
   const eventsPath = path.join(runDir, 'events.jsonl');
 
-  const driver = new BrowserDriver();
+  const driver = new AdvancedDriver();
   await driver.start(startUrl);
-  const executor = new Executor(driver);
-  const graph = buildGraph(executor);
+  const executor = new ExecutorAdvanced(driver);
+  const graph = buildGraph(executor as any, driver as any);
 
   const updates: any[] = [];
+  const savedImages: string[] = [];
   let step = 0;
-  let lastSavedHash: string | undefined;
   for await (const u of graph.stream(
     { goal, steps: 0 },
     { configurable: { thread_id } },
@@ -41,16 +41,13 @@ app.post('/run', async (req: Request, res: Response) => {
     const b64 = state?.lastScreenshot as string | undefined;
     if (b64) {
       const buf = Buffer.from(b64, 'base64');
-      const hash = crypto.createHash('sha1').update(buf).digest('hex');
-      if (hash !== lastSavedHash) {
-        const filename = `step-${String(step).padStart(4, '0')}-${hash}.png`;
-        const outPath = path.join(runDir, filename);
-        try {
-          fs.writeFileSync(outPath, buf);
-          savedImagePath = outPath;
-          lastSavedHash = hash;
-        } catch {}
-      }
+      const filename = `step-${String(step).padStart(4, '0')}.png`;
+      const outPath = path.join(runDir, filename);
+      try {
+        fs.writeFileSync(outPath, buf);
+        savedImagePath = outPath;
+        savedImages.push(outPath);
+      } catch {}
     }
 
     const event = {
@@ -67,7 +64,7 @@ app.post('/run', async (req: Request, res: Response) => {
   }
 
   await driver.stop();
-  res.json({ thread_id, updates, logs_dir: runDir });
+  res.json({ thread_id, updates, logs_dir: runDir, images: savedImages });
 });
 
 app.listen(7007, () => console.log('RPA agent listening on :7007'));
