@@ -2,35 +2,52 @@
 
 Monorepo for a sandboxed, replayable RPA agent that uses computer-use models and Playwright.
 
-## Quick start
+## Local run (no Docker)
 
-1. Export keys
+1) Create a .env file in repo root (copy from ENV.EXAMPLE)
 
-```bash
-export OPENAI_API_KEY=... # or ANTHROPIC_API_KEY
+```
+OPENAI_API_KEY=sk-...
+COMPUTER_USE_MODEL=computer-preview
+STEP_LIMIT=40
+ALLOWLIST=drive.google.com,accounts.google.com,docs.google.com
 ```
 
-2. Build and run the Docker sandbox
+2) Install deps and build
 
-```bash
-docker compose up --build
+```
+npm install --workspaces --include-workspace-root
+npm run build
 ```
 
-3. Kick off the example task
+3) Start services in two terminals
 
-```bash
+- Terminal A (viewer)
+```
+npm run start:viewer
+```
+- Terminal B (agent)
+```
+npm run start:agent
+```
+
+4) Trigger a run
+
+```
 curl -X POST localhost:7007/run \
   -H "content-type: application/json" \
-  -d @<(jq -n --argjson f "$(cat tasks/invoices.yaml | yq -o=json)" '$f')
+  -d '{"goal":"Take a screenshot of the page then stop.","startUrl":"https://www.google.com"}'
 ```
 
-4. Observe screenshots
+5) Observe
 
-- Optional VNC: http://localhost:7900
-- Lightweight viewer: http://localhost:7008/latest.png
+- Latest screenshot: http://localhost:7008/latest.png (refresh periodically)
 
-## Dev
+## Docker (optional)
 
-- Monorepo managed via npm/yarn workspaces.
-- Core state machine uses LangGraph with SQLite checkpointer.
-- Actions executed by Playwright driver in a headless Xvfb desktop.
+See docker-compose.yml; set OPENAI_API_KEY in your shell and run `docker compose up --build`.
+
+## Notes
+
+- Viewer shows 404 until the first screenshot is taken.
+- Guardrails: `STEP_LIMIT`, `ALLOWLIST` in env.

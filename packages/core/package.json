@@ -13,6 +13,7 @@
     "dependencies": {
         "@langchain/langgraph": "*",
         "@langchain/langgraph-checkpoint-sqlite": "*",
+        "dotenv": "^17.2.1",
         "openai": "^4.58.1"
     },
     "devDependencies": {

@@ -12,32 +12,65 @@ export type ComputerUseResult = {
   text?: string;
 };
 
+function mapAction(a: any): ComputerAction | null {
+  switch (a?.type) {
+    case 'screenshot':
+      return { type: 'screenshot' };
+    case 'click':
+      return { type: 'left_click', x: a.x, y: a.y };
+    case 'move':
+      return { type: 'mouse_move', x: a.x, y: a.y };
+    case 'type':
+      return { type: 'type', text: a.text ?? '' };
+    case 'keypress':
+      return { type: 'key', combo: (a.keys ?? []).join('+') };
+    default:
+      return null;
+  }
+}
+
 export class OpenAIComputerUse {
   private client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
-  constructor(
-    private model = process.env.COMPUTER_USE_MODEL ?? 'computer-preview',
-  ) {}
+  private model = process.env.COMPUTER_USE_MODEL || 'computer-use-preview';
 
-  async step(input: string, latestScreenshotB64?: string) {
-    const res = await this.client.responses.create({
-      model: this.model,
-      input,
-      tools: [
-        {
-          type: 'computer-preview',
-          display_width: 1280,
-          display_height: 800,
-          environment: 'browser',
-        },
-      ],
-      truncation: 'auto',
-    });
+  async step(
+    userGoal: string,
+    latestScreenshotB64?: string,
+  ): Promise<ComputerAction[] | undefined> {
+    const input: any[] = [{ role: 'user', content: userGoal }];
 
-    const toolCalls = (res as any).output
-      ?.flatMap((o: any) => o?.content || [])
-      ?.filter((c: any) => c.type === 'tool_call');
-    return toolCalls?.map((call: any) => call?.input) as
-      | ComputerAction[]
-      | undefined;
+    const tools: any = [
+      {
+        type: 'computer_use_preview',
+        display_width: 1280,
+        display_height: 800,
+        environment: 'browser',
+      },
+    ];
+
+    try {
+      const res = await this.client.responses.create({
+        model: this.model,
+        tools,
+        input,
+        truncation: 'auto',
+      });
+
+      const calls =
+        (res as any).output?.filter((i: any) => i.type === 'computer_call') ||
+        [];
+      const actions = calls
+        .map((c: any) => mapAction(c.action))
+        .filter(Boolean) as ComputerAction[];
+      return actions;
+    } catch (e: any) {
+      const msg = e?.error?.message || e?.message || '';
+      if (/computer_use_preview.*not supported/i.test(msg)) {
+        throw new Error(
+          'Selected model does not support hosted computer-use tools. Set COMPUTER_USE_MODEL=computer-use-preview and ensure access is enabled for your org/project.',
+        );
+      }
+      throw e;
+    }
   }
 }

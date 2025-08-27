@@ -7,7 +7,7 @@
     ],
     "scripts": {
         "build": "tsc -b -v tsconfig.build.json",
-        "clean": "rimraf \"**/dist\" rpa-checkpoints.sqlite",
+        "clean": "rimraf \"**/dist\" \"**/*.tsbuildinfo\" rpa-checkpoints.sqlite",
         "start:agent": "node apps/agent/dist/index.js",
         "start:viewer": "node apps/viewer/dist/index.js"
     },
@@ -17,5 +17,8 @@
         "@types/node": "^20.14.11",
         "rimraf": "^5.0.10",
         "typescript": "^5.5.4"
+    },
+    "dependencies": {
+        "dotenv": "^17.2.1"
     }
 }
